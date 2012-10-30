@@ -1,4 +1,3 @@
-package databases;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,6 +9,10 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Здесь мы сериализуем объект полностью.
+ * TODO зделать что-то типа JSon
+ */
 public class DataBaseB implements Serializable {
     private String bName;
     private TreeMap<Integer, Person> baseTree = new TreeMap<Integer, Person>();
@@ -18,27 +21,44 @@ public class DataBaseB implements Serializable {
 
     private int currID = 0;
 
+    /**
+     * конструктор - присваивает базе переданное имя
+     * @param name - имя БД
+     */
     public DataBaseB(String name) {
         this.bName = name;
     }
 
-
+    /**
+     * переделка имени БД
+     * @param name - новое имя БД
+     * @return  - возвращает старое значение
+     */
     public String resetName(String name) {
         String tmpStr = this.bName;
         this.bName = name;
         return tmpStr;
     }
 
+    /**
+     * @return имя БД
+     */
     public String getNameBD() {
         return bName;
     }
 
+    /**
+     * Добавление Person в БД
+     * @param name - имя
+     * @param number - номер телефона
+     */
     public void add(String name, String number) {
         Person per = new Person(name, number, currID++);
         baseTree.put(per.getID(), per);
         addToBase(name_ID, per.getName(), per.getID());
         addToBase(number_ID, per.getNumber(), per.getID());
     }
+
 
     private void addToBase(TreeMap<String, LinkedList<Integer>> base,
                            String key, int id) {
@@ -51,6 +71,11 @@ public class DataBaseB implements Serializable {
         }
     }
 
+    /**
+     * Удаление по ID
+     * @param id
+     * @return удалось ли удалить (найден ли элемент)
+     */
     public boolean delete(int id) {
         Person per = baseTree.remove(id);
         if (per == null)

@@ -7,6 +7,7 @@ import org.apache.http.client.HttpClient;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 
 /**
  * User: vovan
@@ -18,30 +19,53 @@ import java.io.InputStreamReader;
  * Порт по умолчанию устанавливается 2121. Для просмотра в браузере нужно зайти на
  * http://localhost:<port> или 127.0.0.1:<port>
  */
+
+/**
+ * /?command=new+qwe&submit=submit
+ */
 public class MyHttpClient {
-    public static void main(String[] args) throws IOException {
+//    public void doQuerry(String line) throws IOException {
+//        HttpClient client = new DefaultHttpClient();
+//        HttpGet request = new HttpGet("http://localhost:" + 2121 + "/?command=" + line.replace(" ", "+") + "&submit=submit");
+//        HttpResponse response = null;
+//        try {
+//            response = client.execute(request);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+//        String str = "";
+//         String ans="";
+//        while ((str = rd.readLine()) != null) {
+//            ans+=str;
+//        }
+//        System.out.println(LoadBalancer.parseHtml(ans));
+//        rd.close();
+//    }
+
+    public String enterCommand() {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String line = "";
-        while (true) {
-            System.out.println("Inout command");
+        System.out.println("Inout command");
+        try {
             line = br.readLine();
-            if (line.equals("quit")) {
-                System.exit(1);
-            }
-            int port = (args.length>0) ? Integer.parseInt(args[0]) : 2121;
-            HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet("http://localhost:" + port + "/?command=" + line.replace(" ", "+")+"&submit=submit");
-            HttpResponse response = client.execute(request);
-            BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-            String answer="";
-            while ((line = rd.readLine()) != null) {
-                answer=answer.concat(line);
-            }
-            String string=answer.replaceFirst("<html>","").replaceFirst("</html>","");
-            string=string.replaceAll("<html>(.*)</html>","");
-            System.out.println(string.trim());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (line.equals("quit")) {
+            System.exit(1);
+        }
 
+        return line;
+    }
 
+    public static void main(String[] args) throws IOException {
+        int portOfLoadBalanser=2121;
+        while (true) {
+            MyHttpClient m = new MyHttpClient();
+            String q = m.enterCommand();
+            LoadBalancer.doQuery(q, portOfLoadBalanser);
         }
     }
 }
+
