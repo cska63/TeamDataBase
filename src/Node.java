@@ -152,8 +152,6 @@ public class Node extends AbstractHttpServer {
             e.printStackTrace();
         }
         out.println("<html>" + ans + "</html>");
-
-
         out.println("<html>" +
                 "<form>" +
                 "<label>" +
