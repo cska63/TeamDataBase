@@ -1,13 +1,8 @@
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.client.HttpClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
+
 
 /**
  * User: vovan
@@ -24,24 +19,6 @@ import java.io.PrintWriter;
  * /?command=new+qwe&submit=submit
  */
 public class MyHttpClient {
-//    public void doQuerry(String line) throws IOException {
-//        HttpClient client = new DefaultHttpClient();
-//        HttpGet request = new HttpGet("http://localhost:" + 2121 + "/?command=" + line.replace(" ", "+") + "&submit=submit");
-//        HttpResponse response = null;
-//        try {
-//            response = client.execute(request);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-//        String str = "";
-//         String ans="";
-//        while ((str = rd.readLine()) != null) {
-//            ans+=str;
-//        }
-//        System.out.println(LoadBalancer.parseHtml(ans));
-//        rd.close();
-//    }
 
     public String enterCommand() {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -60,7 +37,7 @@ public class MyHttpClient {
     }
 
     public static void main(String[] args) throws IOException {
-        int portOfLoadBalanser=2121;
+        int portOfLoadBalanser=8080;
         while (true) {
             MyHttpClient m = new MyHttpClient();
             String q = m.enterCommand();
@@ -68,3 +45,4 @@ public class MyHttpClient {
         }
     }
 }
+

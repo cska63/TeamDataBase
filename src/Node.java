@@ -11,10 +11,20 @@ import java.net.URI;
 
 
 public class Node extends AbstractHttpServer {
+       private boolean isMaster;
+    private int portOfSlave1=0;
+    private int portOfSlave2=0;
 
 
-    public Node(int port) {
+    public Node(int port,boolean _isMaster) {
         this.create(port);
+        isMaster=_isMaster;
+    }
+    public Node(int port,boolean _isMaster,int _portOfSlave1,int _portOfSlave2){
+        this.create(port);
+        isMaster=_isMaster;
+        portOfSlave1=_portOfSlave1;
+        portOfSlave2=_portOfSlave2;
     }
 
     private String[] processingQuerry(String string) {
@@ -33,13 +43,30 @@ public class Node extends AbstractHttpServer {
     public String make(String[] line) throws IOException, ClassNotFoundException {
         if (line[0].equalsIgnoreCase("NEW")) {
             this.db = new DataBaseB(line[1]);
+            if(isMaster==true){
+                String k="";
+                for (String e : line) {
+                    k = k.concat(e + " ");
+                }
+                LoadBalancer.doQuery(k,portOfSlave1);
+                LoadBalancer.doQuery(k,portOfSlave2);
+            }
             System.out.println("Phonebook created");
             return "Phonebook created";
         } else if (line[0].equalsIgnoreCase("ADD")) {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
             }
+
             this.db.add(line[1], line[2]);
+            if(isMaster==true){
+                String k="";
+                for (String e : line) {
+                    k = k.concat(e + " ");
+                }
+                LoadBalancer.doQuery(k,portOfSlave1);
+                LoadBalancer.doQuery(k,portOfSlave2);
+            }
             System.out.println("Record added");
             return "Record added";
         } else if (line[0].equalsIgnoreCase("UPDATE")) {
@@ -138,20 +165,24 @@ public class Node extends AbstractHttpServer {
         PrintWriter out = new PrintWriter(exc.getResponseBody());
         final URI u = exc.getRequestURI();
         final String str = u.toString();
-        String[] q = processingQuerry(str);
         String k = "";
-        for (String e : q) {
-            k = k.concat(e + " ");
+        if (str.length() > 2) {
+            String[] q = processingQuerry(str);
+            for (String e : q) {
+                k = k.concat(e + " ");
+            }
+            System.out.println(k);
+            String ans = null;
+            try {
+
+                ans = this.make(k.split(" "));
+                System.out.println(ans);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            out.println("<html>" + ans + "</html>");
         }
-        System.out.println(k);
-        String ans = null;
-        try {
-            ans = this.make(k.split(" "));
-            System.out.println(ans);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        out.println("<html>" + ans + "</html>");
+
         out.println("<html>" +
                 "<form>" +
                 "<label>" +
@@ -168,7 +199,7 @@ public class Node extends AbstractHttpServer {
     private DataBaseB db = new DataBaseB("");
 
     public static void main(String[] args) {
-        int port = 8080;
-        Node server1 = new Node(port);
+        int port = 2124;
+        Node server1 = new Node(port,false);
     }
 }

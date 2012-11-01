@@ -8,6 +8,12 @@ import java.net.InetSocketAddress;
 
 public abstract class AbstractHttpServer implements HttpHandler {
     public HttpServer server;
+    private int portOfSlave1=0;
+
+    /**
+     * Create server
+     * @param port -number of port
+     */
     public void create(int port) {
         try{
         server = HttpServer.create(new InetSocketAddress(port),0);

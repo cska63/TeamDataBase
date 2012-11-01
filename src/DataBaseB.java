@@ -1,4 +1,3 @@
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,7 +31,7 @@ public class DataBaseB implements Serializable {
     /**
      * переделка имени БД
      * @param name - новое имя БД
-     * @return  - возвращает старое значение
+     * @return - возвращает старое значение
      */
     public String resetName(String name) {
         String tmpStr = this.bName;
