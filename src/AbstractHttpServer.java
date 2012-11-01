@@ -29,7 +29,7 @@ public abstract class AbstractHttpServer implements HttpHandler {
      */
     private void serverStart() {
         server.start();
-        System.out.println("Server started");
+        //System.out.println("Server started");
     }
 
     /**

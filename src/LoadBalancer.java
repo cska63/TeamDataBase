@@ -195,7 +195,7 @@ public class LoadBalancer extends AbstractHttpServer {
             k = k.concat(e + " ");
         }
         String answer = "";
-        if (k.contains("GET_BY_NAME") == true) {
+        if (k.contains("get_by_name") == true) {
             answer = doQuery(k, this.portOfSlave1);
             System.out.println("Slave 1: " + answer);
 

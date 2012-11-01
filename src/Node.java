@@ -12,8 +12,8 @@ import java.net.URI;
 
 public class Node extends AbstractHttpServer {
        private boolean isMaster;
-    private int portOfSlave1=0;
-    private int portOfSlave2=0;
+    private int portOfSlave1;
+    private int portOfSlave2;
 
 
     public Node(int port,boolean _isMaster) {
@@ -51,7 +51,7 @@ public class Node extends AbstractHttpServer {
                 LoadBalancer.doQuery(k,portOfSlave1);
                 LoadBalancer.doQuery(k,portOfSlave2);
             }
-            System.out.println("Phonebook created");
+            //System.out.println("Phonebook created");
             return "Phonebook created";
         } else if (line[0].equalsIgnoreCase("ADD")) {
             if (this.db.getNameBD().equals("")) {
@@ -67,7 +67,7 @@ public class Node extends AbstractHttpServer {
                 LoadBalancer.doQuery(k,portOfSlave1);
                 LoadBalancer.doQuery(k,portOfSlave2);
             }
-            System.out.println("Record added");
+            //System.out.println("Record added");
             return "Record added";
         } else if (line[0].equalsIgnoreCase("UPDATE")) {
             if (this.db.getNameBD().equals("")) {
@@ -78,9 +78,9 @@ public class Node extends AbstractHttpServer {
                 System.out.println("Record updated");
                 return "Record updated";
             } else
-                System.out.println("Record with ID = "
-                        + Integer.parseInt(line[1])
-                        + "was not found");
+             //   System.out.println("Record with ID = "
+             //           + Integer.parseInt(line[1])
+             //           + "was not found");
             return "Record with ID = "
                     + Integer.parseInt(line[1])
                     + "was not found";
@@ -92,12 +92,12 @@ public class Node extends AbstractHttpServer {
                 return "Data base is not created";
             }
             if (this.db.delete(Integer.parseInt(line[1]))) {
-                System.out.println("Record deleted");
+               // System.out.println("Record deleted");
                 return "Record deleted";
             } else
-                System.out.println("Record with ID = "
-                        + Integer.parseInt(line[1])
-                        + " was not found");
+                //System.out.println("Record with ID = "
+                //        + Integer.parseInt(line[1])
+                //        + " was not found");
             return "Record with ID = "
                     + Integer.parseInt(line[1])
                     + " was not found";
@@ -105,51 +105,51 @@ public class Node extends AbstractHttpServer {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
             }
-            System.out.println("Base \"" + this.db.resetName(line[1])
-                    + "\" renamed to \"" + line[1] + "\"");
+            //System.out.println("Base \"" + this.db.resetName(line[1])
+              //      + "\" renamed to \"" + line[1] + "\"");
             return "\"Base \\\"\" + this.db.resetName(line[1])\n" +
                     "                    + \"\\\" renamed to \\\"\" + line[1] + \"\\\"\"";
         } else if (line[0].equalsIgnoreCase("GET_BY_ID")) {
-            System.out
-                    .println(this.db.getByID(Integer.parseInt(line[1])));
+            //System.out
+              //      .println(this.db.getByID(Integer.parseInt(line[1])));
             return this.db.getByID(Integer.parseInt(line[1]));
         } else if (line[0].equalsIgnoreCase("GET_BY_NAME")) {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
             }
-            System.out.println(this.db.getByName(line[1]));
+            //System.out.println(this.db.getByName(line[1]));
             return this.db.getByName(line[1]);
         } else if (line[0].equalsIgnoreCase("GET_BY_NUMBER")) {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
             }
-            System.out.println(this.db.getByNumber(line[1]));
+            //System.out.println(this.db.getByNumber(line[1]));
             return this.db.getByNumber(line[1]);
         } else if (line[0].equalsIgnoreCase("SHOW_BD")) {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
             }
-            System.out.println(this.db.showBD());
+            //System.out.println(this.db.showBD());
             return this.db.showBD();
         } else if (line[0].equalsIgnoreCase("SAVE_BD")) {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
             }
             this.db.save();
-            System.out.println("Base has been saved.");
+            //System.out.println("Base has been saved.");
             return "\"Base has been saved.\"";
         } else if (line[0].equalsIgnoreCase("LOAD_BD")) {
             try {
                 this.db = DataBaseB.load(line[1]);
-                System.out.println(this.db.showBD());
+              //  System.out.println(this.db.showBD());
                 return this.db.showBD();
             } catch (FileNotFoundException e) {
-                System.out.println("File not found.");
+                //System.out.println("File not found.");
                 return "NO";
             }
         } else {
-            System.out
-                    .println("Unknown command. Please look at README.");
+            //System.out
+            //        .println("Unknown command. Please look at README.");
             return "Unknown command. Please look at README.";
         }
     }
@@ -171,12 +171,12 @@ public class Node extends AbstractHttpServer {
             for (String e : q) {
                 k = k.concat(e + " ");
             }
-            System.out.println(k);
+           // System.out.println(k);
             String ans = null;
             try {
 
                 ans = this.make(k.split(" "));
-                System.out.println(ans);
+                //System.out.println(ans);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
