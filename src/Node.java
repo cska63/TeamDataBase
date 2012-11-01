@@ -27,13 +27,13 @@ public class Node extends AbstractHttpServer {
         portOfSlave2=_portOfSlave2;
     }
 
-    private String[] processingQuerry(String string) {
-        string = string.substring("/?command=".length());
-        final int i = string.lastIndexOf('&');
-        string = string.substring(0, i);
-        String[] ans = string.split("\\+");
-        return ans;
-    }
+//    private String[] processingQuerry(String string) {
+//        string = string.substring("/?command=".length());
+//        final int i = string.lastIndexOf('&');
+//        string = string.substring(0, i);
+//        String[] ans = string.split("\\+");
+//        return ans;
+//    }
 
     /**
      * @param line - входная команда
@@ -167,15 +167,15 @@ public class Node extends AbstractHttpServer {
         final String str = u.toString();
         String k = "";
         if (str.length() > 2) {
-            String[] q = processingQuerry(str);
-            for (String e : q) {
-                k = k.concat(e + " ");
-            }
+            String q = LoadBalancer.processingQuerry(str);
+//            for (String e : q) {
+//                k = k.concat(e + " ");
+//            }
            // System.out.println(k);
             String ans = null;
             try {
 
-                ans = this.make(k.split(" "));
+                ans = this.make(q.split(" "));
                 //System.out.println(ans);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();

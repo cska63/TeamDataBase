@@ -175,12 +175,13 @@ public class LoadBalancer extends AbstractHttpServer {
         return LoadBalancer.parseHtml(answer);
     }
 
-    private String[] processingQuerry(String string) {
+    public static String processingQuerry(String string) {
         string = string.substring("/?command=".length());
         final int i = string.lastIndexOf('&');
         string = string.substring(0, i);
-        String[] ans = string.split("\\+");
-        return ans;
+        //String[] ans = string.split("\\+");
+        string=string.replace("+"," ");
+        return string;
     }
 
     public void handle(HttpExchange exc) throws IOException {
@@ -189,18 +190,18 @@ public class LoadBalancer extends AbstractHttpServer {
         final URI u = exc.getRequestURI();
         final String query = u.toString();
 
-        String[] q = processingQuerry(query);
-        String k = "";
-        for (String e : q) {
-            k = k.concat(e + " ");
-        }
+        String q = processingQuerry(query);
+//        String k = "";
+//        for (String e : q) {
+//            k = k.concat(e + " ");
+//        }
         String answer = "";
-        if (k.contains("get_by_name") == true) {
-            answer = doQuery(k, this.portOfSlave1);
+        if (q.contains("get_by_name") == true) {
+            answer = doQuery(q, this.portOfSlave1);
             System.out.println("Slave 1: " + answer);
 
         } else {
-            answer = doQuery(k, this.portOfMaster);
+            answer = doQuery(q, this.portOfMaster);
             System.out.println(answer);
         }
         out.println("<html>" + answer + "</html>");
