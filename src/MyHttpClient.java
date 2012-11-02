@@ -23,7 +23,7 @@ public class MyHttpClient {
     public String enterCommand() {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String line = "";
-        System.out.println("Inout command");
+        System.out.println("Input command");
         try {
             line = br.readLine();
         } catch (IOException e) {
@@ -36,13 +36,13 @@ public class MyHttpClient {
         return line;
     }
 
-    public static void main(String[] args) throws IOException {
-        int portOfLoadBalanser=8080;
-        while (true) {
-            MyHttpClient m = new MyHttpClient();
-            String q = m.enterCommand();
-            LoadBalancer.doQuery(q, portOfLoadBalanser);
-        }
-    }
+//    public static void main(String[] args) throws IOException {
+//        int portOfLoadBalanser=8080;
+//        while (true) {
+//            MyHttpClient m = new MyHttpClient();
+//            String q = m.enterCommand();
+//            LoadBalancer.doQuery(q, portOfLoadBalanser);
+//        }
+//    }
 }
 

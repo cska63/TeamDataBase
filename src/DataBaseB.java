@@ -1,16 +1,10 @@
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 
 /**
  * Здесь мы сериализуем объект полностью.
- * TODO зделать что-то типа JSon
  */
 public class DataBaseB implements Serializable {
     private String bName;
@@ -18,10 +12,11 @@ public class DataBaseB implements Serializable {
     private TreeMap<String, LinkedList<Integer>> name_ID = new TreeMap<String, LinkedList<Integer>>(),
             number_ID = new TreeMap<String, LinkedList<Integer>>();
 
-    private int currID = 0;
+    //Fprivate int currID = 0;
 
     /**
      * конструктор - присваивает базе переданное имя
+     *
      * @param name - имя БД
      */
     public DataBaseB(String name) {
@@ -30,6 +25,7 @@ public class DataBaseB implements Serializable {
 
     /**
      * переделка имени БД
+     *
      * @param name - новое имя БД
      * @return - возвращает старое значение
      */
@@ -48,11 +44,20 @@ public class DataBaseB implements Serializable {
 
     /**
      * Добавление Person в БД
-     * @param name - имя
+     *
+     * @param name   - имя
      * @param number - номер телефона
      */
-    public void add(String name, String number) {
-        Person per = new Person(name, number, currID++);
+//
+//    public void add(String name, String number) {
+//        Person per = new Person(name, number, currID++);
+//        baseTree.put(per.getID(), per);
+//        addToBase(name_ID, per.getName(), per.getID());
+//        addToBase(number_ID, per.getNumber(), per.getID());
+//    }
+
+    public void add(int ID, String name, String number) {
+        Person per = new Person(name, number, ID);
         baseTree.put(per.getID(), per);
         addToBase(name_ID, per.getName(), per.getID());
         addToBase(number_ID, per.getNumber(), per.getID());
@@ -72,6 +77,7 @@ public class DataBaseB implements Serializable {
 
     /**
      * Удаление по ID
+     *
      * @param id
      * @return удалось ли удалить (найден ли элемент)
      */

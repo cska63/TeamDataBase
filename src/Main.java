@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created with IntelliJ IDEA.
@@ -8,17 +9,35 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class Main {
-    public static void main(String[] args) throws IOException {
-        Node master=new Node(2122,true,2123,2124);
-        Node slave1=new Node(2123,false);
-        Node slave2=new Node(2124,false);
 
-        LoadBalancer loadBalancer=new LoadBalancer(8080, 2122, 2123, 2124);
-        int portOfLoadBalanser=8080;
+    private static final String DEFAULT_ADDRESS = "127.0.0.1:8080";
+
+    public static void main(String[] args) throws IOException {
+        Node master1=new Node(2122,true,2123,2124);
+        Node slave11=new Node(2123,false);
+        Node slave12=new Node(2124,false);
+        ArrayList<String> addr1 = new ArrayList<String>();
+        addr1.add("127.0.0.1:2123");
+        addr1.add("127.0.0.1:2124");
+
+        Node master2=new Node(2222,true,2223,2224);
+        Node slave21=new Node(2223,false);
+        Node slave22=new Node(2224,false);
+        ArrayList<String> addr2 = new ArrayList<String>();
+        addr2.add("127.0.0.1:2223");
+        addr2.add("127.0.0.1:2224");
+
+        ArrayList<NodeAddr> ar = new ArrayList<NodeAddr>();
+        ar.add(new NodeAddr("127.0.0.1:2122",addr1));
+        ar.add(new NodeAddr("127.0.0.1:2222",addr2));
+
+
+        LoadBalancer loadBalancer=new LoadBalancer(8080, ar);
+        int portOfLoadBalancer=8080;
+        MyHttpClient m = new MyHttpClient();
         while (true) {
-            MyHttpClient m = new MyHttpClient();
             String q = m.enterCommand();
-            LoadBalancer.doQuery(q, portOfLoadBalanser);
+            System.out.println(LoadBalancer.doQuery(q, DEFAULT_ADDRESS));
         }
     }
 }

@@ -11,9 +11,13 @@ import java.net.URI;
 
 
 public class Node extends AbstractHttpServer {
-       private boolean isMaster;
-    private int portOfSlave1;
-    private int portOfSlave2;
+
+    private final int DEFAULT_SLAVE_PORT_1 = 2122;
+    private final int DEFAULT_SLAVE_PORT_2 = 2123;
+
+    private boolean isMaster;
+    private int portOfSlave1 = DEFAULT_SLAVE_PORT_1;
+    private int portOfSlave2 = DEFAULT_SLAVE_PORT_2;
 
 
     public Node(int port,boolean _isMaster) {
@@ -43,13 +47,13 @@ public class Node extends AbstractHttpServer {
     public String make(String[] line) throws IOException, ClassNotFoundException {
         if (line[0].equalsIgnoreCase("NEW")) {
             this.db = new DataBaseB(line[1]);
-            if(isMaster==true){
+            if(isMaster) {
                 String k="";
                 for (String e : line) {
                     k = k.concat(e + " ");
                 }
-                LoadBalancer.doQuery(k,portOfSlave1);
-                LoadBalancer.doQuery(k,portOfSlave2);
+                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave1);
+                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave2);
             }
             //System.out.println("Phonebook created");
             return "Phonebook created";
@@ -58,14 +62,14 @@ public class Node extends AbstractHttpServer {
                 return "Data base is not created";
             }
 
-            this.db.add(line[1], line[2]);
-            if(isMaster==true){
+            this.db.add(Integer.parseInt(line[3]),line[1], line[2]);
+            if(isMaster) {
                 String k="";
                 for (String e : line) {
                     k = k.concat(e + " ");
                 }
-                LoadBalancer.doQuery(k,portOfSlave1);
-                LoadBalancer.doQuery(k,portOfSlave2);
+                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave1);
+                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave2);
             }
             //System.out.println("Record added");
             return "Record added";
@@ -73,9 +77,16 @@ public class Node extends AbstractHttpServer {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
             }
-            if (this.db.update(line[2], line[3],
+            if (this.db.update(line[3], line[4],
                     Integer.parseInt(line[1]))) {
-                System.out.println("Record updated");
+                if(isMaster) {
+                    String k="";
+                    for (String e : line) {
+                        k = k.concat(e + " ");
+                    }
+                    LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave1);
+                    LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave2);
+                }
                 return "Record updated";
             } else
              //   System.out.println("Record with ID = "
@@ -89,9 +100,18 @@ public class Node extends AbstractHttpServer {
             return "OK";
         } else if (line[0].equalsIgnoreCase("DELETE")) {
             if (this.db.getNameBD().equals("")) {
+
                 return "Data base is not created";
             }
             if (this.db.delete(Integer.parseInt(line[1]))) {
+                if(isMaster) {
+                    String k="";
+                    for (String e : line) {
+                        k = k.concat(e + " ");
+                    }
+                    LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave1);
+                    LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave2);
+                }
                // System.out.println("Record deleted");
                 return "Record deleted";
             } else
@@ -135,6 +155,14 @@ public class Node extends AbstractHttpServer {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
             }
+            if(isMaster) {
+                String k="";
+                for (String e : line) {
+                    k = k.concat(e + " ");
+                }
+                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave1);
+                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave2);
+            }
             this.db.save();
             //System.out.println("Base has been saved.");
             return "\"Base has been saved.\"";
@@ -174,7 +202,6 @@ public class Node extends AbstractHttpServer {
            // System.out.println(k);
             String ans = null;
             try {
-
                 ans = this.make(q.split(" "));
                 //System.out.println(ans);
             } catch (ClassNotFoundException e) {

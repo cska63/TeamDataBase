@@ -128,23 +128,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LoadBalancer extends AbstractHttpServer {
-    /**
-     * @param port1 - сервер
-     * @param port2 - мой
-     * @throws IOException
-     */
-    private int portOfMaster = 0;
-    private int portOfSlave1 = 0;
-    private int portOfSlave2 = 0;
 
-    public LoadBalancer(int port1, int _portOfMaster, int _portOfSlave1, int _portOfSlave2) {
+    ArrayList<NodeAddr> addresses = null;
+    private final int DEFAULT_DENOMINATOR = 97;
+    private int lastID = 0;
+
+    public LoadBalancer(int port1, ArrayList<NodeAddr> _servers) {
         this.create(port1);
-        portOfMaster = _portOfMaster;
-        portOfSlave1 = _portOfSlave1;
-        portOfSlave2 = _portOfSlave2;
-
+        addresses = _servers;
     }
 
     public static String parseHtml(String html) {
@@ -153,9 +149,9 @@ public class LoadBalancer extends AbstractHttpServer {
         return string.trim();
     }
 
-    public static String doQuery(String query, int port2) throws IOException {
+    public static String doQuery(String query, String addr) throws IOException {
         HttpClient client = new DefaultHttpClient();
-        HttpGet request = new HttpGet("http://localhost:" + port2 + "/?command=" + query.replace(" ", "+") + "&submit=submit");
+        HttpGet request = new HttpGet("http://" + addr + "/?command=" + query.replace(" ", "+") + "&submit=submit");
         HttpResponse response = null;
         try {
             response = client.execute(request);
@@ -180,8 +176,19 @@ public class LoadBalancer extends AbstractHttpServer {
         final int i = string.lastIndexOf('&');
         string = string.substring(0, i);
         //String[] ans = string.split("\\+");
-        string=string.replace("+"," ");
+        string = string.replace("+", " ");
         return string;
+    }
+
+    public int getHash(String value) {
+        int sum = 0;
+        for (char a : value.toCharArray()) {
+            sum += (int) a;
+        }
+
+        sum %= DEFAULT_DENOMINATOR;
+        sum %= addresses.size();
+        return sum;
     }
 
     public void handle(HttpExchange exc) throws IOException {
@@ -197,21 +204,51 @@ public class LoadBalancer extends AbstractHttpServer {
 //        }
         String answer = "";
         if (q.contains("get_by_name") == true) {
-            answer = doQuery(q, this.portOfSlave1);
-            System.out.println("Slave 1: " + answer);
+            String name = q.substring(q.indexOf(" ") + 1);
+            answer = doQuery(q, addresses.get(getHash(name)).slavesAddr.get(0)); //wtf
+            //System.out.println("Result: " + answer);
 
-        } else {
-            answer = doQuery(q, this.portOfMaster);
-            System.out.println(answer);
+        } else if (q.contains("get_by_id") || q.contains("get_by_number")) {
+            for (NodeAddr a : addresses) {
+                answer += doQuery(q, a.slavesAddr.get(0)) + "\n";
+            }
+            answer = answer.replaceAll("Nothing found\n", "");
+
+            if (answer.trim().equals(""))
+                answer = "Nothing found";
+//            System.out.println(answer);
+        } else if (q.contains("new")) {
+            for (NodeAddr a : addresses) {
+                answer += doQuery(q, a.masterAddr) + "\n";
+            }
+        } else if (q.contains("delete")) {
+            for (NodeAddr a : addresses) {
+                answer += doQuery(q, a.masterAddr) + "\n";
+            }
+
+        } else if (q.contains("update")) {
+            //id+old_name+new_name+tel
+            Pattern pattern=Pattern.compile("([update]{1}) (\\d+) ([A-Za-z]+) ([A-Za-z]+) (.+)");
+            Matcher matcher=pattern.matcher(q);
+            matcher.find();
+            String name = matcher.group(3);
+            doQuery("delete "+matcher.group(2),addresses.get(getHash(name)).masterAddr) ;
+            answer = doQuery("add "+matcher.group(4)+" "+matcher.group(5)+" "+matcher.group(2), addresses.get(getHash(matcher.group(4))).masterAddr);
+        } else if (q.contains("add")) {
+            String name = q.trim().substring(q.indexOf(" ") + 1, q.lastIndexOf(" "));
+            q += " " + lastID++;
+            answer += doQuery(q, addresses.get(getHash(name)).masterAddr);
         }
+
+
         out.println("<html>" + answer + "</html>");
         out.close();
         exc.close();
     }
 
-    public static void main(String[] args) throws IOException {
-        LoadBalancer l = new LoadBalancer(8080, 2122, 2123, 2124);
-    }
+//    public static void main(String[] args) throws IOException {
+//        LoadBalancer l = new LoadBalancer(8080, 2122, 2123, 2124);
+//    }
 
 }
 
