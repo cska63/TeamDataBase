@@ -21,7 +21,6 @@ public class DataBaseB implements Serializable {
     private TreeMap<String, LinkedList<Integer>> name_ID = new TreeMap<String, LinkedList<Integer>>(),
             number_ID = new TreeMap<String, LinkedList<Integer>>();
 
-    //Fprivate int currID = 0;
 
     /**
      * конструктор - присваивает базе переданное имя
@@ -51,21 +50,8 @@ public class DataBaseB implements Serializable {
         return bName;
     }
 
-    /**
-     * Добавление Person в БД
-     *
-     * @param name   - имя
-     * @param number - номер телефона
-     */
-//
-//    public void add(String name, String number) {
-//        Person per = new Person(name, number, currID++);
-//        baseTree.put(per.getID(), per);
-//        addToBase(name_ID, per.getName(), per.getID());
-//        addToBase(number_ID, per.getNumber(), per.getID());
-//    }
     public void add(int ID, String name, String number) {
-	    currId = ID;
+        currId = ID;
         Person per = new Person(name, number, ID);
         baseTree.put(per.getID(), per);
         addToBase(name_ID, per.getName(), per.getID());
@@ -159,34 +145,33 @@ public class DataBaseB implements Serializable {
     }
 
     public void savetoJson(int port) throws IOException {
-        BufferedWriter out = new BufferedWriter(new FileWriter("saves/" + bName +" "+port+ ".bb"));
+        BufferedWriter out = new BufferedWriter(new FileWriter("saves/" + bName + " " + port + ".bb"));
         Type typeOfMap = new TypeToken<TreeMap<Integer, Person>>() {
         }.getType();
         out.write((new Gson()).toJson(baseTree, typeOfMap));
         out.close();
     }
 
-    public static DataBaseB loadFromJson(String fname,int port) throws IOException, ClassNotFoundException {
+    public static DataBaseB loadFromJson(String fname, int port) throws IOException, ClassNotFoundException {
         DataBaseB tmpDB = new DataBaseB(fname);
-        try{
-        System.out.println(fname);
-        FileInputStream fin = new FileInputStream("saves/" + fname + " "+port+".bb");
-        FileChannel fch = fin.getChannel();
-        ByteBuffer byteBuff = fch.map(FileChannel.MapMode.READ_ONLY, 0, fch.size());
-        CharBuffer chBuff = Charset.forName("UTF-8").decode(byteBuff);
-        Gson gs = new Gson();
-        Type typeOfMap = new TypeToken<TreeMap<Integer, Person>>() {
-        }.getType();
-        tmpDB.baseTree = gs.fromJson(chBuff.toString(), typeOfMap);
-            if(tmpDB.baseTree==null){
-                tmpDB.baseTree=new TreeMap<Integer, Person>();
+        try {
+            FileInputStream fin = new FileInputStream("saves/" + fname + " " + port + ".bb");
+            FileChannel fch = fin.getChannel();
+            ByteBuffer byteBuff = fch.map(FileChannel.MapMode.READ_ONLY, 0, fch.size());
+            CharBuffer chBuff = Charset.forName("UTF-8").decode(byteBuff);
+            Gson gs = new Gson();
+            Type typeOfMap = new TypeToken<TreeMap<Integer, Person>>() {
+            }.getType();
+            tmpDB.baseTree = gs.fromJson(chBuff.toString(), typeOfMap);
+            if (tmpDB.baseTree == null) {
+                tmpDB.baseTree = new TreeMap<Integer, Person>();
             }
-        for (Map.Entry<Integer, Person> entry : tmpDB.baseTree.entrySet()) {
-            tmpDB.addToBase(tmpDB.name_ID, entry.getValue().getName(), entry.getValue().getID());
-            tmpDB.addToBase(tmpDB.number_ID, entry.getValue().getNumber(), entry.getValue().getID());
-        }
-		tmpDB.currId = tmpDB.baseTree.lastKey();
-        }catch (Exception e){
+            for (Map.Entry<Integer, Person> entry : tmpDB.baseTree.entrySet()) {
+                tmpDB.addToBase(tmpDB.name_ID, entry.getValue().getName(), entry.getValue().getID());
+                tmpDB.addToBase(tmpDB.number_ID, entry.getValue().getNumber(), entry.getValue().getID());
+            }
+            tmpDB.currId = tmpDB.baseTree.lastKey();
+        } catch (Exception e) {
         }
         return tmpDB;
     }
