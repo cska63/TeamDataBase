@@ -167,6 +167,8 @@ public class DataBaseB implements Serializable {
     }
 
     public static DataBaseB loadFromJson(String fname,int port) throws IOException, ClassNotFoundException {
+        DataBaseB tmpDB = new DataBaseB(fname);
+        try{
         System.out.println(fname);
         FileInputStream fin = new FileInputStream("saves/" + fname + " "+port+".bb");
         FileChannel fch = fin.getChannel();
@@ -175,13 +177,17 @@ public class DataBaseB implements Serializable {
         Gson gs = new Gson();
         Type typeOfMap = new TypeToken<TreeMap<Integer, Person>>() {
         }.getType();
-        DataBaseB tmpDB = new DataBaseB(fname);
         tmpDB.baseTree = gs.fromJson(chBuff.toString(), typeOfMap);
+            if(tmpDB.baseTree==null){
+                tmpDB.baseTree=new TreeMap<Integer, Person>();
+            }
         for (Map.Entry<Integer, Person> entry : tmpDB.baseTree.entrySet()) {
             tmpDB.addToBase(tmpDB.name_ID, entry.getValue().getName(), entry.getValue().getID());
             tmpDB.addToBase(tmpDB.number_ID, entry.getValue().getNumber(), entry.getValue().getID());
         }
 		tmpDB.currId = tmpDB.baseTree.lastKey();
+        }catch (Exception e){
+        }
         return tmpDB;
     }
 
@@ -190,5 +196,9 @@ public class DataBaseB implements Serializable {
         baseTree.clear();
         name_ID.clear();
         number_ID.clear();
+    }
+
+    public int getCurrId() {
+        return currId;
     }
 }

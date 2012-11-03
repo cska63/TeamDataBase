@@ -1,3 +1,4 @@
+import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -5,11 +6,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -233,10 +235,19 @@ public class LoadBalancer extends AbstractHttpServer {
                     answer+=doQuery(q,a.slavesAddr.get(i))+ " ";
                 }
                 answer+=doQuery(q,a.masterAddr)+" ";
+                int max=-1;
+                for (NodeAddr addr:addresses){
+                    int tmpMax=Integer.parseInt(doQuery("lastID",addr.masterAddr));
+                    if(tmpMax>max){
+                        max=tmpMax;
+                    }
+                }
+                lastID=max+1;
                 if(answer.contains("OK")){
                     answer="OK";
                 }
             }
+
         } else if(q.contains("exit_bd")){
             for(NodeAddr a:addresses){
                 for (int i=0;i<a.slavesAddr.size();i++){

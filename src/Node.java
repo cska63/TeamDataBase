@@ -173,13 +173,17 @@ public class Node extends AbstractHttpServer {
         } else if (line[0].equalsIgnoreCase("LOAD_BD")) {
             try {
                 this.db = DataBaseB.loadFromJson(line[1],this.myPort);
+
               //  System.out.println(this.db.showBD());
                 return "OK";
             } catch (FileNotFoundException e) {
                 //System.out.println("File not found.");
                 return "NO";
             }
-        } else {
+        }else if(line[0].equals("lastID")){
+              return new Integer(this.db.getCurrId()).toString();
+        }
+        else {
             //System.out
             //        .println("Unknown command. Please look at README.");
             return "Unknown command. Please look at README.";
@@ -235,10 +239,10 @@ public class Node extends AbstractHttpServer {
     private DataBaseB db = new DataBaseB("");
 
     public static void main(String[] args) {
-        ArrayList<String> addr1 = new ArrayList<String>(); addr1.add("127.0.0.1:2223"); addr1.add("127.0.0.1:2224");
-        ArrayList<String> addr2 = new ArrayList<String>(); addr2.add("127.0.0.1:2222"); addr2.add("127.0.0.1:2224");
+        ArrayList<String> addr1 = new ArrayList<String>(); addr1.add("127.0.0.1:2123"); addr1.add("127.0.0.1:2224");
+        ArrayList<String> addr2 = new ArrayList<String>(); addr2.add("127.0.0.1:2122"); addr2.add("127.0.0.1:2224");
 
-        ArrayList<String> addr3 = new ArrayList<String>(); addr3.add("127.0.0.1:2222"); addr3.add("127.0.0.1:2223");
+        ArrayList<String> addr3 = new ArrayList<String>(); addr3.add("127.0.0.1:2122"); addr3.add("127.0.0.1:2223");
 
         Node server1 = new Node(2222,true,addr1);
         Node slave1 = new Node(2223,false,addr2);
