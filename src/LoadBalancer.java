@@ -82,10 +82,6 @@ public class LoadBalancer extends AbstractHttpServer {
         final String query = u.toString();
 
         String q = processingQuerry(query);
-// String k = "";
-// for (String e : q) {
-// k = k.concat(e + " ");
-// }
         String answer = "";
         if (q.contains("get_by_name") == true) {
             String name = q.substring(q.indexOf(" ") + 1);
@@ -204,6 +200,42 @@ public class LoadBalancer extends AbstractHttpServer {
                 answer += tmp;
 
             //answer += doQuery(q, adr.masterAddr);
+        }else if(q.contains("show_bd")){
+            for(NodeAddr a:addresses){
+                answer+=doQuery(q,a.slavesAddr.get(0))+" " ;
+            }
+        }  else if(q.contains("save_bd")){
+            for (NodeAddr a:addresses){
+                for(int i=0;i<a.slavesAddr.size();i++){
+                    answer+=doQuery(q,a.slavesAddr.get(i))+" ";
+                }
+                answer+=doQuery(q,a.masterAddr)+" ";
+                if(answer.contains("Base has been saved")){
+                    answer="Base has been saved";
+                }
+            }
+        }   else if(q.contains("load_bd")){
+            for(NodeAddr a:addresses){
+                for (int i=0;i<a.slavesAddr.size();i++){
+                    answer+=doQuery(q,a.slavesAddr.get(i))+ " ";
+                }
+                answer+=doQuery(q,a.masterAddr)+" ";
+                if(answer.contains("OK")){
+                    answer="OK";
+                }
+            }
+        } else if(q.contains("exit_bd")){
+            for(NodeAddr a:addresses){
+                for (int i=0;i<a.slavesAddr.size();i++){
+                    answer+=doQuery(q,a.slavesAddr.get(i))+ " ";
+                }
+                answer+=doQuery(q,a.masterAddr)+" ";
+                if(answer.contains("OK")){
+                    answer="OK";
+                }
+            }
+        }  else if(q.contains("quit")){
+             System.exit(1);
         }
 
 

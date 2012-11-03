@@ -8,24 +8,26 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 
 public class Node extends AbstractHttpServer {
 
-    private final String OWN_ADDR = "127.0.0.1";
-    private boolean isMaster;
-    private ArrayList<String> slavesAddr = null;
+    private final int DEFAULT_SLAVE_PORT_1 = 2122;
+    private final int DEFAULT_SLAVE_PORT_2 = 2123;
 
-//    public Node(int port, boolean _isMaster) {
-//        this.create(port);
-//        isMaster=_isMaster;
-//    }
-    public Node(int port, boolean _isMaster, ArrayList<String> _slavesAddr ){
+    private boolean isMaster;
+    private int portOfSlave1 = DEFAULT_SLAVE_PORT_1;
+    private int portOfSlave2 = DEFAULT_SLAVE_PORT_2;
+
+    public Node(int port,boolean _isMaster) {
         this.create(port);
         isMaster=_isMaster;
-        slavesAddr = _slavesAddr;
+    }
+    public Node(int port,boolean _isMaster,int _portOfSlave1,int _portOfSlave2){
+        this.create(port);
+        isMaster=_isMaster;
+        portOfSlave1=_portOfSlave1;
+        portOfSlave2=_portOfSlave2;
     }
 
 //    private String[] processingQuerry(String string) {
@@ -49,11 +51,8 @@ public class Node extends AbstractHttpServer {
                 for (String e : line) {
                     k = k.concat(e + " ");
                 }
-
-                for (int i = 0; i < slavesAddr.size(); i++) {
-                    LoadBalancer.doQuery(k, slavesAddr.get(i));
-                }
-
+                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave1);
+                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave2);
             }
             //System.out.println("Phonebook created");
             return "Phonebook created";
@@ -68,10 +67,8 @@ public class Node extends AbstractHttpServer {
                 for (String e : line) {
                     k = k.concat(e + " ");
                 }
-
-                for (int i = 0; i < slavesAddr.size(); i++) {
-                    LoadBalancer.doQuery(k, slavesAddr.get(i));
-                }
+                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave1);
+                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave2);
             }
             //System.out.println("Record added");
             return "Record added";
@@ -86,10 +83,8 @@ public class Node extends AbstractHttpServer {
                     for (String e : line) {
                         k = k.concat(e + " ");
                     }
-
-                    for (int i = 0; i < slavesAddr.size(); i++) {
-                        LoadBalancer.doQuery(k, slavesAddr.get(i));
-                    }
+                    LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave1);
+                    LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave2);
                 }
                 return "Record updated";
             } else
@@ -100,7 +95,7 @@ public class Node extends AbstractHttpServer {
                     + Integer.parseInt(line[1])
                     + "was not found";
         } else if (line[0].equalsIgnoreCase("EXIT_BD")) {
-            this.db.resetName("");
+            this.db.flush();
             return "OK";
         } else if (line[0].equalsIgnoreCase("DELETE")) {
             if (this.db.getNameBD().equals("")) {
@@ -113,10 +108,8 @@ public class Node extends AbstractHttpServer {
                     for (String e : line) {
                         k = k.concat(e + " ");
                     }
-
-                    for (int i = 0; i < slavesAddr.size(); i++) {
-                        LoadBalancer.doQuery(k, slavesAddr.get(i));
-                    }
+                    LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave1);
+                    LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave2);
                 }
                // System.out.println("Record deleted");
                 return "Record deleted";
@@ -133,7 +126,7 @@ public class Node extends AbstractHttpServer {
             }
             //System.out.println("Base \"" + this.db.resetName(line[1])
               //      + "\" renamed to \"" + line[1] + "\"");
-            return "\"Base \\\"\" + this.db.resetName(line[1])\n" +
+            return "\"Base \\\"\" + this.db.resetName(line[1])<br>" +
                     "                    + \"\\\" renamed to \\\"\" + line[1] + \"\\\"\"";
         } else if (line[0].equalsIgnoreCase("GET_BY_ID")) {
             //System.out
@@ -151,12 +144,6 @@ public class Node extends AbstractHttpServer {
             }
             //System.out.println(this.db.getByNumber(line[1]));
             return this.db.getByNumber(line[1]);
-        } else if (line[0].equalsIgnoreCase("SET_MASTER")) {
-            this.setMaster(true);
-            return "";
-        } else if (line[0].equalsIgnoreCase("UNSET_MASTER")) {
-            this.setMaster(false);
-            return "";
         } else if (line[0].equalsIgnoreCase("SHOW_BD")) {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
@@ -167,16 +154,14 @@ public class Node extends AbstractHttpServer {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
             }
-            if(isMaster) {
-                String k="";
-                for (String e : line) {
-                    k = k.concat(e + " ");
-                }
-
-                for (int i = 0; i < slavesAddr.size(); i++) {
-                    LoadBalancer.doQuery(k, slavesAddr.get(i));
-                }
-            }
+//            if(isMaster) {
+//                String k="";
+//                for (String e : line) {
+//                    k = k.concat(e + " ");
+//                }
+//                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave1);
+//                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave2);
+//            }
             this.db.save();
             //System.out.println("Base has been saved.");
             return "\"Base has been saved.\"";
@@ -184,7 +169,7 @@ public class Node extends AbstractHttpServer {
             try {
                 this.db = DataBaseB.load(line[1]);
               //  System.out.println(this.db.showBD());
-                return this.db.showBD();
+                return "OK";
             } catch (FileNotFoundException e) {
                 //System.out.println("File not found.");
                 return "NO";
@@ -194,10 +179,6 @@ public class Node extends AbstractHttpServer {
             //        .println("Unknown command. Please look at README.");
             return "Unknown command. Please look at README.";
         }
-    }
-
-    public void setMaster(boolean _master) {
-        isMaster = _master;
     }
 
     /**
@@ -244,11 +225,8 @@ public class Node extends AbstractHttpServer {
     private DataBaseB db = new DataBaseB("");
 
     public static void main(String[] args) {
-        ArrayList<String> addr1 = new ArrayList<String>(); addr1.add("127.0.0.1:2223"); addr1.add("127.0.0.1:2224");
-        ArrayList<String> addr2 = new ArrayList<String>(); addr2.add("127.0.0.1:2222"); addr2.add("127.0.0.1:2224");
-        ArrayList<String> addr3 = new ArrayList<String>(); addr3.add("127.0.0.1:2222"); addr3.add("127.0.0.1:2223");
-        //Node server1 = new Node(2222,true,addr1);
-        //Node slave1 = new Node(2223,false,addr2);
-        Node slave2 = new Node(2224,false,addr3);
+        Node server1 = new Node(2122,true,2123,2124);
+        Node slave1 = new Node(2123,false);
+        Node slave2 = new Node(2124,false);
     }
 }

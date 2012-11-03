@@ -8,23 +8,25 @@ import java.net.InetSocketAddress;
 
 public abstract class AbstractHttpServer implements HttpHandler {
     public HttpServer server;
-    private int portOfSlave1=0;
+    protected int myPort;
 
     /**
      * Create server
+     *
      * @param port -number of port
      */
     public void create(int port) {
-        try{
-        server = HttpServer.create(new InetSocketAddress(port),0);
-        server.createContext("/", this);
-        this.serverStart();
-            System.out.println("port= "+port);
-        }catch (IOException e){
+        try {
+            server = HttpServer.create(new InetSocketAddress(port), 0);
+            server.createContext("/", this);
+            myPort = port;
+            this.serverStart();
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
 
     }
+
     /**
      * Старт сервера
      */
@@ -35,6 +37,7 @@ public abstract class AbstractHttpServer implements HttpHandler {
 
     /**
      * остановка сервера
+     *
      * @param ch
      */
     private void serverStop(int ch) {

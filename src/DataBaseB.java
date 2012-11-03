@@ -163,17 +163,17 @@ public class DataBaseB implements Serializable {
         oos.close();
     }
 
-    public void savetoJson() throws IOException {
-        BufferedWriter out = new BufferedWriter(new FileWriter("saves/" + bName + ".bb"));
+    public void savetoJson(int port) throws IOException {
+        BufferedWriter out = new BufferedWriter(new FileWriter("saves/" + bName +" "+port+ ".bb"));
         Type typeOfMap = new TypeToken<TreeMap<Integer, Person>>() {
         }.getType();
         out.write((new Gson()).toJson(baseTree, typeOfMap));
         out.close();
     }
 
-    public static DataBaseB loadFromJson(String fname) throws IOException, ClassNotFoundException {
+    public static DataBaseB loadFromJson(String fname,int port) throws IOException, ClassNotFoundException {
         System.out.println(fname);
-        FileInputStream fin = new FileInputStream("saves/" + fname + ".bb");
+        FileInputStream fin = new FileInputStream("saves/" + fname + " "+port+".bb");
         FileChannel fch = fin.getChannel();
         ByteBuffer byteBuff = fch.map(FileChannel.MapMode.READ_ONLY, 0, fch.size());
         CharBuffer chBuff = Charset.forName("UTF-8").decode(byteBuff);
@@ -191,7 +191,7 @@ public class DataBaseB implements Serializable {
 
     public static DataBaseB load(String adr) throws IOException,
             ClassNotFoundException {
-        System.out.println(adr);
+        //System.out.println(adr);
         ObjectInputStream oin = new ObjectInputStream(new FileInputStream(adr
                 + ".bb"));
         return (DataBaseB) oin.readObject();
