@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Time: 11:31 PM
  * To change this template use File | Settings | File Templates.
  */
-public class Main {
+public class Main_sh2_s2 {
 
     private static final String DEFAULT_ADDRESS = "127.0.0.1:8080";
 
@@ -35,10 +35,9 @@ public class Main {
         LoadBalancer loadBalancer=new LoadBalancer(8080, ar);
         int portOfLoadBalancer=8080;
         MyHttpClient m = new MyHttpClient(8888);
-        Config c = LoadBalancer.loadConfig("config.json");
         while (true) {
             String q = m.enterCommand();
-            System.out.println(LoadBalancer.doQuery(q, c.router));
+            System.out.println(LoadBalancer.doQuery(q, DEFAULT_ADDRESS));
         }
     }
 }
