@@ -1,7 +1,10 @@
+import com.sun.net.httpserver.HttpExchange;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.URI;
 
 
 /**
@@ -18,8 +21,10 @@ import java.io.InputStreamReader;
 /**
  * /?command=new+qwe&submit=submit
  */
-public class MyHttpClient {
-
+public class MyHttpClient extends AbstractHttpServer {
+     public MyHttpClient(int port){
+         this.create(port);
+     }
     public String enterCommand() {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String line = "";
@@ -34,6 +39,37 @@ public class MyHttpClient {
         }
 
         return line;
+    }
+
+
+    @Override
+    public void handle(HttpExchange exc) throws IOException {
+        exc.sendResponseHeaders(200, 0);
+        PrintWriter out = new PrintWriter(exc.getResponseBody());
+        final URI u = exc.getRequestURI();
+        final String str = u.toString();
+        String k = "";
+        if (str.length() > 2) {
+            String q = LoadBalancer.processingQuerry(str);
+            String ans = null;
+                ans=LoadBalancer.doQuery(q,"127.0.0.1:8080");
+                //ans = this.make(q.split(" "));
+                //System.out.println(ans);
+
+            out.println("<html>" + ans + "</html>");
+        }
+
+        out.println("<html>" +
+                "<form>" +
+                "<label>" +
+                "<input type='text' type='text' name='command' id='textfield' >" +
+                "</label>" +
+                "<label>" +
+                "<input type='submit' name='submit' id = 'value' value='submit'>" +
+                "</form>" +
+                "</html>");
+        out.close();
+        exc.close();
     }
 
 //    public static void main(String[] args) throws IOException {

@@ -19,6 +19,7 @@ public abstract class AbstractHttpServer implements HttpHandler {
         server = HttpServer.create(new InetSocketAddress(port),0);
         server.createContext("/", this);
         this.serverStart();
+            System.out.println("port= "+port);
         }catch (IOException e){
             System.out.println(e.getMessage());
         }

@@ -225,9 +225,9 @@ public class Node extends AbstractHttpServer {
 
     private DataBaseB db = new DataBaseB("");
 
-    public static void main(String[] args) {
-        Node server1 = new Node(2122,true,2123,2124);
-        Node slave1 = new Node(2123,false);
-        Node slave2 = new Node(2124,false);
-    }
+//    public static void main(String[] args) {
+//        Node server1 = new Node(2122,true,2123,2124);
+//        Node slave1 = new Node(2123,false);
+//        Node slave2 = new Node(2124,false);
+//    }
 }
