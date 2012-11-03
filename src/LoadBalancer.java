@@ -63,7 +63,6 @@ public class LoadBalancer extends AbstractHttpServer {
         } catch (HttpHostConnectException e) {
             return null;
         } catch (IOException e) {
-            System.out.println(e.getMessage());
             rd.close();
         }
 
@@ -111,11 +110,8 @@ public class LoadBalancer extends AbstractHttpServer {
                     answer += "Node is unavailable.";
                 }
             }
-
             if (tmp != null)
                 answer += tmp + "\n";
-            //System.out.println("Result: " + answer);
-
         } else if (q.contains("get_by_id") || q.contains("get_by_number")) {
             for (NodeAddr a : addresses) {
 
@@ -128,7 +124,6 @@ public class LoadBalancer extends AbstractHttpServer {
                         answer += "Node is unavailable.";
                     }
                 }
-
                 if (tmp != null)
                     answer += tmp + "\n";
             }
@@ -160,7 +155,6 @@ public class LoadBalancer extends AbstractHttpServer {
                     answer += tmp;
             }
         } else if (q.contains("update")) {
-            //id+old_name+new_name+tel
             Pattern pattern=Pattern.compile("([update]{1}) (\\d+) ([A-Za-z]+) ([A-Za-z]+) (.+)");
             Matcher matcher=pattern.matcher(q);
             matcher.find();
@@ -214,7 +208,6 @@ public class LoadBalancer extends AbstractHttpServer {
             }
             if (tmp != null)
                 answer += tmp;
-              //answer += doQuery(q, adr.masterAddr);
         }else if(q.contains("show_bd")){
             for(NodeAddr a:addresses){
                 answer+=doQuery(q,a.slavesAddr.get(0))+" " ;

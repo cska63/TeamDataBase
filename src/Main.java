@@ -10,7 +10,6 @@ import java.util.ArrayList;
  */
 public class Main {
 
-    private static final String DEFAULT_ADDRESS = "127.0.0.1:8080";
 
     public static void main(String[] args) throws IOException {
 //        Node master1=new Node(2122,true,2123,2124);
