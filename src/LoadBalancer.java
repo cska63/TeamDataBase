@@ -29,8 +29,12 @@ public class LoadBalancer extends AbstractHttpServer {
 	
     public LoadBalancer(String config_file) throws IOException {
         Config conf = LoadBalancer.loadConfig(config_file);
-        this.create(Integer.parseInt(conf.router.substring(conf.router.indexOf(":") + 1)));
+        this.create(cutPortFromAddress(conf.router));
         addresses = (ArrayList<NodeAddr>) conf.shards;
+    }
+
+    public static int cutPortFromAddress(String addr) throws IOException {
+        return Integer.parseInt(addr.substring(addr.indexOf(":") + 1));
     }
 	
     public static Config loadConfig(String cname) throws IOException {
