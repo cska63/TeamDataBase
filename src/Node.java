@@ -137,6 +137,13 @@ public class Node extends AbstractHttpServer {
             //System.out
               //      .println(this.db.getByID(Integer.parseInt(line[1])));
             return this.db.getByID(Integer.parseInt(line[1]));
+
+        }  else if (line[0].equalsIgnoreCase("SET_MASTER")) {
+            this.setMaster(true);
+            return "";
+        } else if (line[0].equalsIgnoreCase("UNSET_MASTER")) {
+            this.setMaster(false);
+            return "";
         } else if (line[0].equalsIgnoreCase("GET_BY_NAME")) {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
