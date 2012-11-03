@@ -198,7 +198,9 @@ public class LoadBalancer extends AbstractHttpServer {
             }
             if (tmp != null)
                 answer += tmp;
-
+             if(answer.trim()==null){
+                 answer="could not be added";
+             }
             //answer += doQuery(q, adr.masterAddr);
         }else if(q.contains("show_bd")){
             for(NodeAddr a:addresses){
@@ -228,6 +230,7 @@ public class LoadBalancer extends AbstractHttpServer {
             for(NodeAddr a:addresses){
                 for (int i=0;i<a.slavesAddr.size();i++){
                     answer+=doQuery(q,a.slavesAddr.get(i))+ " ";
+                    lastID=0;
                 }
                 answer+=doQuery(q,a.masterAddr)+" ";
                 if(answer.contains("OK")){
