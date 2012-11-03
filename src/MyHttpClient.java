@@ -52,10 +52,7 @@ public class MyHttpClient extends AbstractHttpServer {
         if (str.length() > 2) {
             String q = LoadBalancer.processingQuerry(str);
             String ans = null;
-                ans=LoadBalancer.doQuery(q,"127.0.0.1:8080");
-                //ans = this.make(q.split(" "));
-                //System.out.println(ans);
-
+            ans=LoadBalancer.doQuery(q,"127.0.0.1:8080");
             out.println("<html>" + ans + "</html>");
         }
 

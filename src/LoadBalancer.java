@@ -100,7 +100,7 @@ public class LoadBalancer extends AbstractHttpServer {
 // System.out.println(answer);
         } else if (q.contains("new")) {
             for (NodeAddr a : addresses) {
-                answer += doQuery(q, a.masterAddr) + "\n";
+                answer = doQuery(q, a.masterAddr) + "\n";
             }
         } else if (q.contains("delete")) {
             for (NodeAddr a : addresses) {
