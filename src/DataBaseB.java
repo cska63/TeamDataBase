@@ -1,4 +1,12 @@
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.*;
+import java.lang.reflect.Type;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
@@ -55,7 +63,6 @@ public class DataBaseB implements Serializable {
 //        addToBase(name_ID, per.getName(), per.getID());
 //        addToBase(number_ID, per.getNumber(), per.getID());
 //    }
-
     public void add(int ID, String name, String number) {
         Person per = new Person(name, number, ID);
         baseTree.put(per.getID(), per);
@@ -156,11 +163,44 @@ public class DataBaseB implements Serializable {
         oos.close();
     }
 
+    public void savetoJson() throws IOException {
+        BufferedWriter out = new BufferedWriter(new FileWriter("saves/" + bName + ".bb"));
+        Type typeOfMap = new TypeToken<TreeMap<Integer, Person>>() {
+        }.getType();
+        out.write((new Gson()).toJson(baseTree, typeOfMap));
+        out.close();
+    }
+
+    public static DataBaseB loadFromJson(String fname) throws IOException, ClassNotFoundException {
+        System.out.println(fname);
+        FileInputStream fin = new FileInputStream("saves/" + fname + ".bb");
+        FileChannel fch = fin.getChannel();
+        ByteBuffer byteBuff = fch.map(FileChannel.MapMode.READ_ONLY, 0, fch.size());
+        CharBuffer chBuff = Charset.forName("UTF-8").decode(byteBuff);
+        Gson gs = new Gson();
+        Type typeOfMap = new TypeToken<TreeMap<Integer, Person>>() {
+        }.getType();
+        DataBaseB tmpDB = new DataBaseB(fname);
+        tmpDB.baseTree = gs.fromJson(chBuff.toString(), typeOfMap);
+        for (Map.Entry<Integer, Person> entry : tmpDB.baseTree.entrySet()) {
+            tmpDB.addToBase(tmpDB.name_ID, entry.getValue().getName(), entry.getValue().getID());
+            tmpDB.addToBase(tmpDB.number_ID, entry.getValue().getNumber(), entry.getValue().getID());
+        }
+        return tmpDB;
+    }
+
     public static DataBaseB load(String adr) throws IOException,
             ClassNotFoundException {
         System.out.println(adr);
         ObjectInputStream oin = new ObjectInputStream(new FileInputStream(adr
                 + ".bb"));
         return (DataBaseB) oin.readObject();
+    }
+
+    public void flush() {
+        bName = "";
+        baseTree.clear();
+        name_ID.clear();
+        number_ID.clear();
     }
 }
