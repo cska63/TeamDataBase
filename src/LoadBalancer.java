@@ -24,7 +24,21 @@ public class LoadBalancer extends AbstractHttpServer {
         this.create(port1);
         addresses = _servers;
     }
-
+	
+    public LoadBalancer(String config_file) throws IOException {
+        Config conf = LoadBalancer.loadConfig(config_file);
+        this.create(Integer.parseInt(conf.router.substring(conf.router.indexOf(":") + 1)));
+        addresses = (ArrayList<NodeAddr>) conf.shards;
+    }
+	
+    public static Config loadConfig(String cname) throws IOException {
+        FileInputStream fin = new FileInputStream(cname);
+        FileChannel fch = fin.getChannel();
+        ByteBuffer byteBuff = fch.map(FileChannel.MapMode.READ_ONLY, 0, fch.size());
+        CharBuffer chBuff = Charset.forName("UTF-8").decode(byteBuff);
+        return (new Gson()).fromJson(chBuff.toString(), Config.class);
+    }
+	
     public static String parseHtml(String html) {
         String string = html.replaceFirst("<html>", "").replaceFirst("</html>", "");
         string = string.replaceAll("<html>(.*)</html>", "");
