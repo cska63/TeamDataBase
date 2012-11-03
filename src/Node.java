@@ -162,12 +162,12 @@ public class Node extends AbstractHttpServer {
 //                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave1);
 //                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave2);
 //            }
-            this.db.save();
+            this.db.savetoJson(myPort);
             //System.out.println("Base has been saved.");
             return "\"Base has been saved.\"";
         } else if (line[0].equalsIgnoreCase("LOAD_BD")) {
             try {
-                this.db = DataBaseB.load(line[1]);
+                this.db = DataBaseB.loadFromJson(line[1],this.myPort);
               //  System.out.println(this.db.showBD());
                 return "OK";
             } catch (FileNotFoundException e) {
