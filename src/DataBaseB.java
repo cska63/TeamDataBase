@@ -15,6 +15,7 @@ import java.util.TreeMap;
  * Здесь мы сериализуем объект полностью.
  */
 public class DataBaseB implements Serializable {
+    private int currId = -1;
     private String bName;
     private TreeMap<Integer, Person> baseTree = new TreeMap<Integer, Person>();
     private TreeMap<String, LinkedList<Integer>> name_ID = new TreeMap<String, LinkedList<Integer>>(),
@@ -64,6 +65,7 @@ public class DataBaseB implements Serializable {
 //        addToBase(number_ID, per.getNumber(), per.getID());
 //    }
     public void add(int ID, String name, String number) {
+	    currId = ID;
         Person per = new Person(name, number, ID);
         baseTree.put(per.getID(), per);
         addToBase(name_ID, per.getName(), per.getID());
@@ -156,13 +158,6 @@ public class DataBaseB implements Serializable {
         return ans;
     }
 
-    public void save() throws IOException {
-        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(
-                bName + ".bb"));
-        oos.writeObject(this);
-        oos.close();
-    }
-
     public void savetoJson(int port) throws IOException {
         BufferedWriter out = new BufferedWriter(new FileWriter("saves/" + bName +" "+port+ ".bb"));
         Type typeOfMap = new TypeToken<TreeMap<Integer, Person>>() {
@@ -186,15 +181,8 @@ public class DataBaseB implements Serializable {
             tmpDB.addToBase(tmpDB.name_ID, entry.getValue().getName(), entry.getValue().getID());
             tmpDB.addToBase(tmpDB.number_ID, entry.getValue().getNumber(), entry.getValue().getID());
         }
+		tmpDB.currId = tmpDB.baseTree.lastKey();
         return tmpDB;
-    }
-
-    public static DataBaseB load(String adr) throws IOException,
-            ClassNotFoundException {
-        //System.out.println(adr);
-        ObjectInputStream oin = new ObjectInputStream(new FileInputStream(adr
-                + ".bb"));
-        return (DataBaseB) oin.readObject();
     }
 
     public void flush() {
