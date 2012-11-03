@@ -8,26 +8,23 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.util.ArrayList;
 
 
 public class Node extends AbstractHttpServer {
 
-    private final int DEFAULT_SLAVE_PORT_1 = 2122;
-    private final int DEFAULT_SLAVE_PORT_2 = 2123;
-
     private boolean isMaster;
-    private int portOfSlave1 = DEFAULT_SLAVE_PORT_1;
-    private int portOfSlave2 = DEFAULT_SLAVE_PORT_2;
+    private final String OWN_ADDR = "127.0.0.1";
+    private ArrayList<String> slavesAddr = null;
 
-    public Node(int port,boolean _isMaster) {
+//    public Node(int port,boolean _isMaster) {
+//        this.create(port);
+//        isMaster=_isMaster;
+//    }
+    public Node(int port, boolean _isMaster, ArrayList<String> _slavesAddr ) {
         this.create(port);
         isMaster=_isMaster;
-    }
-    public Node(int port,boolean _isMaster,int _portOfSlave1,int _portOfSlave2){
-        this.create(port);
-        isMaster=_isMaster;
-        portOfSlave1=_portOfSlave1;
-        portOfSlave2=_portOfSlave2;
+        slavesAddr = _slavesAddr;
     }
 
 //    private String[] processingQuerry(String string) {
@@ -51,8 +48,10 @@ public class Node extends AbstractHttpServer {
                 for (String e : line) {
                     k = k.concat(e + " ");
                 }
-                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave1);
-                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave2);
+
+                for (int i = 0; i < slavesAddr.size(); i++) {
+                    LoadBalancer.doQuery(k, slavesAddr.get(i));
+                }
             }
             //System.out.println("Phonebook created");
             return "Phonebook created";
@@ -67,8 +66,10 @@ public class Node extends AbstractHttpServer {
                 for (String e : line) {
                     k = k.concat(e + " ");
                 }
-                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave1);
-                LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave2);
+
+                for (int i = 0; i < slavesAddr.size(); i++) {
+                    LoadBalancer.doQuery(k, slavesAddr.get(i));
+                }
             }
             //System.out.println("Record added");
             return "Record added";
@@ -83,8 +84,10 @@ public class Node extends AbstractHttpServer {
                     for (String e : line) {
                         k = k.concat(e + " ");
                     }
-                    LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave1);
-                    LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave2);
+
+                    for (int i = 0; i < slavesAddr.size(); i++) {
+                        LoadBalancer.doQuery(k, slavesAddr.get(i));
+                    }
                 }
                 return "Record updated";
             } else
@@ -108,8 +111,10 @@ public class Node extends AbstractHttpServer {
                     for (String e : line) {
                         k = k.concat(e + " ");
                     }
-                    LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave1);
-                    LoadBalancer.doQuery(k,"127.0.0.1:" + portOfSlave2);
+
+                    for (int i = 0; i < slavesAddr.size(); i++) {
+                        LoadBalancer.doQuery(k, slavesAddr.get(i));
+                    }
                 }
                // System.out.println("Record deleted");
                 return "Record deleted";
@@ -222,11 +227,21 @@ public class Node extends AbstractHttpServer {
         exc.close();
     }
 
+    public void setMaster(boolean _master) {
+
+        isMaster = _master;
+    }
+
     private DataBaseB db = new DataBaseB("");
 
     public static void main(String[] args) {
-        Node server1 = new Node(2122,true,2123,2124);
-        Node slave1 = new Node(2123,false);
-        Node slave2 = new Node(2124,false);
+        ArrayList<String> addr1 = new ArrayList<String>(); addr1.add("127.0.0.1:2223"); addr1.add("127.0.0.1:2224");
+        ArrayList<String> addr2 = new ArrayList<String>(); addr2.add("127.0.0.1:2222"); addr2.add("127.0.0.1:2224");
+
+        ArrayList<String> addr3 = new ArrayList<String>(); addr3.add("127.0.0.1:2222"); addr3.add("127.0.0.1:2223");
+
+        Node server1 = new Node(2222,true,addr1);
+        Node slave1 = new Node(2223,false,addr2);
+        Node slave2 = new Node(2224,false,addr3);
     }
 }
