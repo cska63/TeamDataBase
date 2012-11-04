@@ -1,1 +1,1 @@
-java -jar Main_sh2_s2.jar
+java -jar Slave02_02.jar
