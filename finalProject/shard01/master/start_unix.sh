@@ -1,3 +1,2 @@
-#!bin/bash/
-java -jar Master01.jar
- 
+#!/bin/bash
+java -cp '../../classes:../../lib/*' Main master 0

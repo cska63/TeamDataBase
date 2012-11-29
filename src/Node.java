@@ -2,8 +2,12 @@ import com.sun.net.httpserver.HttpExchange;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 
 @SuppressWarnings("UnusedAssignment")
@@ -16,6 +20,8 @@ public class Node extends AbstractHttpServer {
         this.create(port);
         isMaster=_isMaster;
         slavesAddr = _slavesAddr;
+
+        System.out.println(isMaster ? "Master":"Slave" + " started on port:" + port);
     }
 
     /**
@@ -36,7 +42,21 @@ public class Node extends AbstractHttpServer {
                     LoadBalancer.doQuery(k, aSlavesAddr);
                 }
             }
+            System.out.println("Phonebook created with name: " + line[1]);
             return "Phonebook created";
+        } else if(line[0].equalsIgnoreCase("shutdown_all")){
+
+            System.out.println("Shutdown command accepted. 5 seconds before shutdown");
+            try {
+                Thread.sleep(5000L);
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
+
+            this.serverStop(1);
+
+            return "OK";
+
         } else if (line[0].equalsIgnoreCase("ADD")) {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
@@ -53,11 +73,18 @@ public class Node extends AbstractHttpServer {
                     LoadBalancer.doQuery(k, aSlavesAddr);
                 }
             }
-            return "Record added" + "ID = " + Integer.parseInt(line[3]);
+
+            String res = "Record added" + "ID = " + Integer.parseInt(line[3]);
+            System.out.println(res);
+
+            return res;
         } else if (line[0].equalsIgnoreCase("UPDATE")) {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
             }
+
+            String res = new String();
+
             if (this.db.update(line[3], line[4],
                     Integer.parseInt(line[1]))) {
                 if(isMaster) {
@@ -70,19 +97,31 @@ public class Node extends AbstractHttpServer {
                         LoadBalancer.doQuery(k, aSlavesAddr);
                     }
                 }
-                return "Record updated";
+
+                res = "Record with id=" + line[1] + "updated";
+
             } else
-            return "Record with ID = "
-                    + Integer.parseInt(line[1])
+                res = "Record with ID = "
+                    + line[1]
                     + "was not found";
+
+            System.out.println(res);
+            return res;
         } else if (line[0].equalsIgnoreCase("EXIT_BD")) {
             this.db.flush();
-            return "OK";
+            String res = "Exit from " + db.getNameBD() + " successful";
+            System.out.println(res);
+            return res + " on " + (this.isMaster ? "Master:" : "Slave:") + this.getIp();
+
         } else if (line[0].equalsIgnoreCase("DELETE")) {
+
             if (this.db.getNameBD().equals("")) {
 
                 return "Data base is not created";
             }
+
+            String res = null;
+
             if (this.db.delete(Integer.parseInt(line[1]))) {
                 if(isMaster) {
                     String k="";
@@ -94,51 +133,82 @@ public class Node extends AbstractHttpServer {
                         LoadBalancer.doQuery(k, aSlavesAddr);
                     }
                 }
-                return "Record deleted";
+                res = "Record with id=" + line[1] + " deleted";
             } else
-           return "Record with ID = "
-                    + Integer.parseInt(line[1])
+                res = "Record with ID = "
+                    + line[1]
                     + " was not found";
+
+            System.out.println(res);
+            return res;
+
         } else if (line[0].equalsIgnoreCase("RENAME_BD")) {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
             }
 
-            return "\"Base \\\"\" + this.db.resetName(line[1])<br>" +
-                    "                    + \"\\\" renamed to \\\"\" + line[1] + \"\\\"\"";
+            String res = "Base " + this.db.resetName(line[1]) +
+                    " renamed to " + line[1];
+            System.out.println(res);
+            return res;
+
         } else if (line[0].equalsIgnoreCase("GET_BY_ID")) {
+
+            System.out.println("Get request for id = " + line[1] + " accepted");
+
             return this.db.getByID(Integer.parseInt(line[1]));
 
         }  else if (line[0].equalsIgnoreCase("SET_MASTER")) {
+
+            System.out.println("SET_MASTER accepted. this node is Master now");
             this.setMaster(true);
             return "";
+
         } else if (line[0].equalsIgnoreCase("UNSET_MASTER")) {
+
+            System.out.println("UNSET_MASTER accepted. this node is not master now");
             this.setMaster(false);
             return "";
+
         } else if (line[0].equalsIgnoreCase("GET_BY_NAME")) {
+
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
             }
+
+            System.out.println("Get request for name = " + line[1] + " accepted");
+
             return this.db.getByName(line[1]);
         } else if (line[0].equalsIgnoreCase("GET_BY_NUMBER")) {
+
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
             }
+
+            System.out.println("Get request for number = " + line[1] + " accepted");
+
             return this.db.getByNumber(line[1]);
         } else if (line[0].equalsIgnoreCase("SHOW_BD")) {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
             }
+
+            System.out.println("show_bd accepted. returning all records");
+
             return this.db.showBD();
         } else if (line[0].equalsIgnoreCase("SAVE_BD")) {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
             }
 
+            System.out.println("Saving to json");
+
             this.db.savetoJson(myPort);
             return "\"Base has been saved.\"";
         } else if (line[0].equalsIgnoreCase("LOAD_BD")) {
             try {
+
+                System.out.println("Loading database");
                 this.db = DataBaseB.loadFromJson(line[1],this.myPort);
                 return "OK";
             } catch (FileNotFoundException e) {
@@ -150,6 +220,23 @@ public class Node extends AbstractHttpServer {
         else {
             return "Unknown command. Please look at README.";
         }
+    }
+
+    public String getIp() throws SocketException {
+
+        String res = null;
+
+        for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+            NetworkInterface intf = en.nextElement();
+            for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                InetAddress inetAddress = enumIpAddr.nextElement();
+                if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && inetAddress.isSiteLocalAddress()) {
+                    res = inetAddress.toString();
+                }
+            }
+        }
+
+        return res;
     }
 
     /**
@@ -193,14 +280,4 @@ public class Node extends AbstractHttpServer {
 
     private DataBaseB db = new DataBaseB("");
 
-    public static void main(String[] args) {
-        ArrayList<String> addr1 = new ArrayList<String>(); addr1.add("127.0.0.1:2223"); addr1.add("127.0.0.1:2224");
-        ArrayList<String> addr2 = new ArrayList<String>(); addr2.add("127.0.0.1:2222"); addr2.add("127.0.0.1:2224");
-
-        ArrayList<String> addr3 = new ArrayList<String>(); addr3.add("127.0.0.1:2222"); addr3.add("127.0.0.1:2223");
-
-        new Node(2222,true,addr1);
-        new Node(2223,false,addr2);
-        new Node(2224,false,addr3);
-    }
 }

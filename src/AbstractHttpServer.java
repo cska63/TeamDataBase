@@ -30,15 +30,16 @@ public abstract class AbstractHttpServer implements HttpHandler {
     /**
      * Старт сервера
      */
-    private void serverStart() {
+    protected void serverStart() {
         server.start();
         //System.out.println("Server started");
     }
 
 
-    private void serverStop(int ch) {
+    protected void serverStop(int ch) {
         server.stop(ch);
         System.out.println("Server stoped");
+        System.exit(1);
     }
 
     public abstract void handle(HttpExchange exc) throws IOException;

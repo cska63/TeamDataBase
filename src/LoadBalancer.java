@@ -96,6 +96,7 @@ public class LoadBalancer extends AbstractHttpServer {
     }
 
     public void handle(HttpExchange exc) throws IOException {
+
         exc.sendResponseHeaders(200, 0);
         PrintWriter out = new PrintWriter(exc.getResponseBody());
         final URI u = exc.getRequestURI();
@@ -228,22 +229,27 @@ public class LoadBalancer extends AbstractHttpServer {
                 }
             }
         }   else if(q.contains("load_bd")){
+
             for(NodeAddr a:addresses){
                 for (int i=0;i<a.slavesAddr.size();i++){
                     answer+=doQuery(q,a.slavesAddr.get(i))+ " ";
                 }
+
                 answer+=doQuery(q,a.masterAddr)+" ";
-                int max=-1;
-                for (NodeAddr addr:addresses){
-                    int tmpMax=Integer.parseInt(doQuery("lastID",addr.masterAddr));
-                    if(tmpMax>max){
-                        max=tmpMax;
-                    }
+
+            }
+
+            int max=-1;
+            for (NodeAddr addr:addresses){
+                int tmpMax=Integer.parseInt(doQuery("lastID",addr.masterAddr));
+                if(tmpMax>max){
+                    max=tmpMax;
                 }
-                lastID=max+1;
-                if(answer.contains("OK")){
-                    answer="OK";
-                }
+            }
+            lastID=max+1;
+
+            if(answer.contains("OK")){
+                answer="OK";
             }
 
         } else if(q.contains("exit_bd")){
@@ -252,14 +258,22 @@ public class LoadBalancer extends AbstractHttpServer {
                     answer+=doQuery(q,a.slavesAddr.get(i))+ " ";
                     lastID=0;
                 }
-                answer+=doQuery(q,a.masterAddr)+" ";
-                if(answer.contains("OK")){
-                    answer="OK";
-                }
+                answer += doQuery(q,a.masterAddr)+" ";
+
             }
-        }  else if(q.contains("help")){
+        } else if(q.contains("shutdown_all")){
+
+            for(NodeAddr a:addresses){
+                for (int i=0;i<a.slavesAddr.size();i++){
+                    doQuery(q,a.slavesAddr.get(i));
+                }
+
+                answer = doQuery(q,a.masterAddr);
+
+            }
+        } else if(q.contains("help")){
             answer = "список команд:\n" +
-                    "new <dbname> - создает бд на всех шардах\n" +
+                    "new <dbname> - создает бд на всех шардах \n" +
                     "add <name> <phone> - добавляет запись в БД\n" +
                     "save_bd - сохраняет бд\n" +
                     "load_bd <bdname> - загружает бд\n" +
@@ -269,6 +283,7 @@ public class LoadBalancer extends AbstractHttpServer {
                     "get_by_id <id> - получить запись по id\n" +
                     "show_bd - распечатать всю бд\n" +
                     "exit_bd - выход из бд\n" +
+                    "shutdown_all - выключить все ноды\n" +
                     "quit - выход из программы";
         }   else if(q.contains("quit")){
              System.exit(1);

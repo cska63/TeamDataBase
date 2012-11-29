@@ -1,1 +1,2 @@
-java -jar Balancer_Client.jar
+#!/bin/bash
+java -cp '../classes:../lib/*' Main loadbalancer

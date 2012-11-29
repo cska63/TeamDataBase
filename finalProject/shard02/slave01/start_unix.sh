@@ -1,3 +1,2 @@
-#!bin/bash/
-java -jar Slave02_01.jar
- 
+#!/bin/bash
+java -cp '../../classes:../../lib/*' Main slave 1 0
