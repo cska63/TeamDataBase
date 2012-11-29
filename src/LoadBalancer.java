@@ -257,7 +257,20 @@ public class LoadBalancer extends AbstractHttpServer {
                     answer="OK";
                 }
             }
-        }  else if(q.contains("quit")){
+        }  else if(q.contains("help")){
+            answer = "список команд:\n" +
+                    "new <dbname> - создает бд на всех шардах\n" +
+                    "add <name> <phone> - добавляет запись в БД\n" +
+                    "save_bd - сохраняет бд\n" +
+                    "load_bd <bdname> - загружает бд\n" +
+                    "delete <id> - удаляет запись по id\n" +
+                    "update <id> <old_name> <new_name> <new_number> - обновляет запись\n" +
+                    "get_by_name <name> - получить запись по имени\n" +
+                    "get_by_id <id> - получить запись по id\n" +
+                    "show_bd - распечатать всю бд\n" +
+                    "exit_bd - выход из бд\n" +
+                    "quit - выход из программы";
+        }   else if(q.contains("quit")){
              System.exit(1);
         }
 
