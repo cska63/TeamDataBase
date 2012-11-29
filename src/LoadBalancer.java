@@ -230,22 +230,18 @@ public class LoadBalancer extends AbstractHttpServer {
                 }
             }
         }   else if(q.contains("load_bd")){
-
+             int max=-1;
             for(NodeAddr a:addresses){
                 for (int i=0;i<a.slavesAddr.size();i++){
                     answer+=doQuery(q,a.slavesAddr.get(i))+ " ";
                 }
 
                 answer+=doQuery(q,a.masterAddr)+" ";
-
-            }
-
-            int max=-1;
-            for (NodeAddr addr:addresses){
-                int tmpMax=Integer.parseInt(doQuery("lastID",addr.masterAddr));
+                int tmpMax=Integer.parseInt(doQuery("lastID",a.masterAddr));
                 if(tmpMax>max){
                     max=tmpMax;
                 }
+
             }
             lastID=max+1;
 

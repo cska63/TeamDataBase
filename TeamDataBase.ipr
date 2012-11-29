@@ -33,6 +33,7 @@
   <component name="GradleSettings">
     <option name="gradleHome" value="/usr/local/Cellar/gradle/1.0-milestone-9/libexec" />
   </component>
+  <component name="IdProvider" IDEtalkID="542F1450DAC5D98CFAEEB17BB25D77A8" />
   <component name="Palette2">
     <group name="Swing">
       <item class="com.intellij.uiDesigner.HSpacer" tooltip-text="Horizontal Spacer" icon="/com/intellij/uiDesigner/icons/hspacer.png" removable="false" auto-create-binding="false" can-attach-label="false">
@@ -159,12 +160,13 @@
       <module fileurl="file://$PROJECT_DIR$/TeamDataBase.iml" filepath="$PROJECT_DIR$/TeamDataBase.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.7 (1)" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
   </component>
+  <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="libraryTable">
     <library name="lib">
       <CLASSES>
