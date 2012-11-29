@@ -53,7 +53,7 @@ public class Node extends AbstractHttpServer {
                     LoadBalancer.doQuery(k, aSlavesAddr);
                 }
             }
-            return "Record added";
+            return "Record added" + "ID = " + Integer.parseInt(line[3]);
         } else if (line[0].equalsIgnoreCase("UPDATE")) {
             if (this.db.getNameBD().equals("")) {
                 return "Data base is not created";
@@ -199,8 +199,8 @@ public class Node extends AbstractHttpServer {
 
         ArrayList<String> addr3 = new ArrayList<String>(); addr3.add("127.0.0.1:2222"); addr3.add("127.0.0.1:2223");
 
-        Node server1 = new Node(2222,true,addr1);
-        Node slave1 = new Node(2223,false,addr2);
-        Node slave2 = new Node(2224,false,addr3);
+        new Node(2222,true,addr1);
+        new Node(2223,false,addr2);
+        new Node(2224,false,addr3);
     }
 }
