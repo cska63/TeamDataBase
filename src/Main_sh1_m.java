@@ -8,6 +8,6 @@ public class Main_sh1_m {
 
         Config c = LoadBalancer.loadConfig("config.json");
         int port=LoadBalancer.cutPortFromAddress(c.shards.get(0).masterAddr);
-        Node sh1_m = new Node(port,true,c.shards.get(0).slavesAddr);
+        new Node(port,true,c.shards.get(0).slavesAddr);
     }
 }

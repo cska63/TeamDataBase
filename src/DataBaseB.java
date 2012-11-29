@@ -11,9 +11,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeMap;
 
-/**
- * Здесь мы сериализуем объект полностью.
- */
+
 public class DataBaseB implements Serializable {
     private int currId = -1;
     private String bName;
@@ -171,7 +169,7 @@ public class DataBaseB implements Serializable {
                 tmpDB.addToBase(tmpDB.number_ID, entry.getValue().getNumber(), entry.getValue().getID());
             }
             tmpDB.currId = tmpDB.baseTree.lastKey();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return tmpDB;
     }

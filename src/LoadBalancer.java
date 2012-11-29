@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 public class LoadBalancer extends AbstractHttpServer {
 
-    ArrayList<NodeAddr> addresses = null;
+    private ArrayList<NodeAddr> addresses = null;
     private final int DEFAULT_DENOMINATOR = 97;
     private int lastID = 0;
 
@@ -45,7 +45,7 @@ public class LoadBalancer extends AbstractHttpServer {
         return (new Gson()).fromJson(chBuff.toString(), Config.class);
     }
 	
-    public static String parseHtml(String html) {
+    private static String parseHtml(String html) {
         String string = html.replaceFirst("<html>", "").replaceFirst("</html>", "");
         string = string.replaceAll("<html>(.*)</html>", "");
         return string.trim();
@@ -56,7 +56,7 @@ public class LoadBalancer extends AbstractHttpServer {
         String answer = "";
         HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet("http://" + addr + "/?command=" + query.replace(" ", "+") + "&submit=submit");
-        HttpResponse response = null;
+        HttpResponse response;
         try {
             response = client.execute(request);
             rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
@@ -67,6 +67,7 @@ public class LoadBalancer extends AbstractHttpServer {
         } catch (HttpHostConnectException e) {
             return null;
         } catch (IOException e) {
+            assert rd != null;
             rd.close();
         }
 
@@ -102,11 +103,11 @@ public class LoadBalancer extends AbstractHttpServer {
 
         String q = processingQuerry(query);
         String answer = "";
-        if (q.contains("get_by_name") == true) {
+        if (q.contains("get_by_name")) {
             String name = q.substring(q.indexOf(" ") + 1);
 
             int i=0;
-            String tmp = null;
+            String tmp;
             ArrayList<String> sl = addresses.get(getHash(name)).slavesAddr;
 
             while ((tmp = doQuery(q, sl.get(i))) == null) {
@@ -120,7 +121,7 @@ public class LoadBalancer extends AbstractHttpServer {
             for (NodeAddr a : addresses) {
 
                 int i=0;
-                String tmp = null;
+                String tmp;
                 ArrayList<String> sl = a.slavesAddr;
 
                 while ((tmp = doQuery(q, sl.get(i))) == null) {
@@ -144,7 +145,7 @@ public class LoadBalancer extends AbstractHttpServer {
             for (NodeAddr a : addresses) {
                 answer += doQuery(q, a.masterAddr) + "\n";
 
-                String tmp = null;
+                String tmp;
                 int i=0;
                 while((tmp = doQuery(q, a.masterAddr)) == null) {
                     if (++i > a.slavesAddr.size()-1) {
@@ -164,7 +165,7 @@ public class LoadBalancer extends AbstractHttpServer {
             matcher.find();
             String name = matcher.group(3);
 
-            String tmp = null;
+            String tmp;
             int i=0;
             NodeAddr adr = addresses.get(getHash(name));
             while((tmp = doQuery("delete "+matcher.group(2),adr.masterAddr)) == null) {
@@ -199,7 +200,7 @@ public class LoadBalancer extends AbstractHttpServer {
             q += " " + lastID++;
 
             NodeAddr adr = addresses.get(getHash(name));
-            String tmp = null;
+            String tmp;
             int i=0;
             while((tmp = doQuery(q, adr.masterAddr)) == null) {
                 if (++i > adr.slavesAddr.size()-1) {

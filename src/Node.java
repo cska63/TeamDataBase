@@ -6,6 +6,7 @@ import java.net.URI;
 import java.util.ArrayList;
 
 
+@SuppressWarnings("UnusedAssignment")
 public class Node extends AbstractHttpServer {
 
     private boolean isMaster;
@@ -31,8 +32,8 @@ public class Node extends AbstractHttpServer {
                     k = k.concat(e + " ");
                 }
 
-                for (int i = 0; i < slavesAddr.size(); i++) {
-                    LoadBalancer.doQuery(k, slavesAddr.get(i));
+                for (String aSlavesAddr : slavesAddr) {
+                    LoadBalancer.doQuery(k, aSlavesAddr);
                 }
             }
             return "Phonebook created";
@@ -48,8 +49,8 @@ public class Node extends AbstractHttpServer {
                     k = k.concat(e + " ");
                 }
 
-                for (int i = 0; i < slavesAddr.size(); i++) {
-                    LoadBalancer.doQuery(k, slavesAddr.get(i));
+                for (String aSlavesAddr : slavesAddr) {
+                    LoadBalancer.doQuery(k, aSlavesAddr);
                 }
             }
             return "Record added";
@@ -65,8 +66,8 @@ public class Node extends AbstractHttpServer {
                         k = k.concat(e + " ");
                     }
 
-                    for (int i = 0; i < slavesAddr.size(); i++) {
-                        LoadBalancer.doQuery(k, slavesAddr.get(i));
+                    for (String aSlavesAddr : slavesAddr) {
+                        LoadBalancer.doQuery(k, aSlavesAddr);
                     }
                 }
                 return "Record updated";
@@ -89,8 +90,8 @@ public class Node extends AbstractHttpServer {
                         k = k.concat(e + " ");
                     }
 
-                    for (int i = 0; i < slavesAddr.size(); i++) {
-                        LoadBalancer.doQuery(k, slavesAddr.get(i));
+                    for (String aSlavesAddr : slavesAddr) {
+                        LoadBalancer.doQuery(k, aSlavesAddr);
                     }
                 }
                 return "Record deleted";
@@ -144,7 +145,7 @@ public class Node extends AbstractHttpServer {
                 return "NO";
             }
         }else if(line[0].equals("lastID")){
-              return new Integer(this.db.getCurrId()).toString();
+              return Integer.toString(this.db.getCurrId());
         }
         else {
             return "Unknown command. Please look at README.";
@@ -162,7 +163,6 @@ public class Node extends AbstractHttpServer {
         PrintWriter out = new PrintWriter(exc.getResponseBody());
         final URI u = exc.getRequestURI();
         final String str = u.toString();
-        String k = "";
         if (str.length() > 2) {
             String q = LoadBalancer.processingQuerry(str);
             String ans = null;

@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 
 public abstract class AbstractHttpServer implements HttpHandler {
-    public HttpServer server;
+    private HttpServer server;
     protected int myPort;
 
     /**
@@ -35,11 +35,7 @@ public abstract class AbstractHttpServer implements HttpHandler {
         //System.out.println("Server started");
     }
 
-    /**
-     * остановка сервера
-     *
-     * @param ch
-     */
+
     private void serverStop(int ch) {
         server.stop(ch);
         System.out.println("Server stoped");

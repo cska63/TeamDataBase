@@ -22,7 +22,7 @@ import java.net.URI;
  * /?command=new+qwe&submit=submit
  */
 public class MyHttpClient extends AbstractHttpServer {
-    String addressRouter;
+    private String addressRouter;
      public MyHttpClient(int port) throws IOException {
          Config c=LoadBalancer.loadConfig("config.json");
          addressRouter=c.router;
@@ -51,10 +51,9 @@ public class MyHttpClient extends AbstractHttpServer {
         PrintWriter out = new PrintWriter(exc.getResponseBody());
         final URI u = exc.getRequestURI();
         final String str = u.toString();
-        String k = "";
         if (str.length() > 2) {
             String q = LoadBalancer.processingQuerry(str);
-            String ans = null;
+            String ans;
 
             ans=LoadBalancer.doQuery(q,addressRouter);
             out.println("<html>" + ans + "</html>");
