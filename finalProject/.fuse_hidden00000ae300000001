@@ -1,0 +1,15 @@
+cd LoadBalancer_Client
+sh start_unix.sh
+cd ../shard01/master
+sh start_unix.sh
+cd ../slave01
+sh start_unix.sh
+cd ../slave02
+sh start_unix.sh
+cd ../../shard02/master
+sh start_unix.sh
+cd ../slave01
+sh start_unix.sh
+cd ../slave02
+sh start_unix.sh
+

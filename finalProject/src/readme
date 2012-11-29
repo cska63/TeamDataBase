@@ -1,0 +1,2 @@
+jar cf Main.jar LoadBalancer.java MyHttpClient.java Main.java Config.java AbstractHttpServer.java lib/*.jar
+
